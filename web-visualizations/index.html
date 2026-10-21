@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>inD Dataset Visualizer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="brand">
+    <h1>inD Visualizer</h1>
+    <p>RWTH Aachen · Intersection Drone Dataset</p>
+  </div>
+
+  <div class="field">
+    <label>Location</label>
+    <select id="sel-location">
+      <option value="">Select location…</option>
+      <option value="1">Location 1</option>
+      <option value="2">Location 2</option>
+      <option value="3">Location 3</option>
+      <option value="4">Location 4</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Recording</label>
+    <select id="sel-recording" disabled>
+      <option value="">Select location first…</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Track</label>
+    <select id="sel-track" disabled>
+      <option value="">Load a recording first…</option>
+    </select>
+  </div>
+
+  <div id="status">Select a location to begin</div>
+
+  <div id="track-info">
+    <div class="row"><span class="key">Track ID</span>   <span class="val" id="i-id">–</span></div>
+    <div class="row"><span class="key">Class</span>      <span class="val" id="i-class">–</span></div>
+    <div class="row"><span class="key">Frames</span>     <span class="val" id="i-frames">–</span></div>
+    <div class="row"><span class="key">Duration</span>   <span class="val" id="i-dur">–</span></div>
+    <div class="row"><span class="key">Size (l×w)</span> <span class="val" id="i-size">–</span></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-title">Legend</div>
+    <div class="legend-row"><div class="dot" style="background:#00ee77;"></div> Start position</div>
+    <div class="legend-row"><div class="dot" style="background:#ff4444;"></div> End position</div>
+    <div class="legend-row"><div class="line"></div> Path</div>
+    <div class="legend-row"><div class="grad-bar"></div> Bounding boxes (start → end)</div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="placeholder">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <path d="M3 9h18M9 21V9"/>
+    </svg>
+    Select a location, recording and track
+  </div>
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

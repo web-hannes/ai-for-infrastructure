@@ -1,0 +1,15 @@
+# uv
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Claude Code
+.claude/
+
+# macOS
+.DS_Store
+
+# Data (large/binary — commit selectively)
+inD-dataset-v1.1/
+*.pdf
