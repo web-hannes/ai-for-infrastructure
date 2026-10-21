@@ -10,6 +10,5 @@
 # macOS
 .DS_Store
 
-# Data (large/binary — commit selectively)
+# Dataset
 inD-dataset-v1.1/
-*.pdf
