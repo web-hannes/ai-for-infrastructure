@@ -48,6 +48,17 @@ label {
   text-transform: uppercase;
   letter-spacing: 1px;
   color: #606088;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hint {
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #404060;
 }
 
 select {

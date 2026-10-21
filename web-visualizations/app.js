@@ -28,6 +28,7 @@ const recToLocation = Object.fromEntries(
 const dom = {
   selLocation:  document.getElementById('sel-location'),
   selRecording: document.getElementById('sel-recording'),
+  selClass:     document.getElementById('sel-class'),
   selTrack:     document.getElementById('sel-track'),
   status:       document.getElementById('status'),
   canvas:       document.getElementById('canvas'),
@@ -43,10 +44,11 @@ const dom = {
 
 const ctx = dom.canvas.getContext('2d');
 
-let bgImage        = null;
-let tracksIndex    = {};  // trackId → [{xCenter, yCenter, heading, width, length}]
-let tracksMeta     = {};  // trackId → row from tracksMeta CSV
-let currentRecId   = null;
+let bgImage          = null;
+let tracksIndex      = {};  // trackId → [{xCenter, yCenter, heading, width, length}]
+let tracksMeta       = {};  // trackId → row from tracksMeta CSV
+let currentRecId     = null;
+let filteredTrackIds = [];
 
 // ── Utilities ────────────────────────────────────────────────────────────────
 
@@ -104,6 +106,8 @@ dom.selLocation.addEventListener('change', () => {
   const loc = parseInt(dom.selLocation.value);
 
   dom.selRecording.innerHTML = '<option value="">Select recording…</option>';
+  dom.selClass.disabled = true;
+  dom.selClass.innerHTML = '<option value="">All classes</option>';
   dom.selTrack.disabled = true;
   dom.selTrack.innerHTML = '<option value="">Load a recording first…</option>';
   dom.trackInfo.classList.remove('visible');
@@ -134,11 +138,25 @@ dom.selTrack.addEventListener('change', () => {
   if (!isNaN(tid)) renderTrack(tid);
 });
 
+dom.selClass.addEventListener('change', () => {
+  populateTrackSelect(dom.selClass.value);
+  dom.trackInfo.classList.remove('visible');
+  ctx.drawImage(bgImage, 0, 0);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!filteredTrackIds.length) return;
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); navigateTrack(-1); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); navigateTrack(1);  }
+});
+
 // ── Data loading ─────────────────────────────────────────────────────────────
 
 async function loadRecording(recId) {
   const pad = padId(recId);
 
+  dom.selClass.disabled = true;
+  dom.selClass.innerHTML = '<option value="">All classes</option>';
   dom.selTrack.disabled = true;
   dom.selTrack.innerHTML = '<option value="">Loading…</option>';
   dom.trackInfo.classList.remove('visible');
@@ -166,35 +184,61 @@ async function loadRecording(recId) {
     return;
   }
 
+  const classes = [...new Set(Object.values(tracksMeta).map(r => r['class']).filter(Boolean))].sort();
+  dom.selClass.innerHTML = '<option value="">All classes</option>';
+  for (const cls of classes) {
+    const opt = document.createElement('option');
+    opt.value = cls;
+    opt.textContent = cls;
+    dom.selClass.appendChild(opt);
+  }
+  dom.selClass.value = '';
+  dom.selClass.disabled = false;
+
   setStatus('Parsing trajectories…', true);
   tracksIndex = {};
 
-  await new Promise((resolve, reject) =>
-    Papa.parse(`${CONFIG.dataPath}/${pad}_tracks.csv`, {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      chunk({ data }) {
-        for (const row of data) {
-          if (row.trackId == null) continue;
-          (tracksIndex[row.trackId] ??= []).push({
-            xCenter: row.xCenter,
-            yCenter: row.yCenter,
-            heading: row.heading,
-            width:   row.width,
-            length:  row.length,
-          });
-        }
-      },
-      complete: resolve,
-      error: reject,
-    })
-  );
+  try {
+    await new Promise((resolve, reject) =>
+      Papa.parse(`${CONFIG.dataPath}/${pad}_tracks.csv`, {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        chunk({ data }) {
+          for (const row of data) {
+            if (row.trackId == null) continue;
+            (tracksIndex[row.trackId] ??= []).push({
+              xCenter: row.xCenter,
+              yCenter: row.yCenter,
+              heading: row.heading,
+              width:   row.width,
+              length:  row.length,
+            });
+          }
+        },
+        complete: resolve,
+        error: reject,
+      })
+    );
+  } catch {
+    setStatus('Failed to parse trajectories');
+    return;
+  }
 
+  currentRecId = recId;
+  populateTrackSelect('');
+}
+
+// ── Track list helpers ────────────────────────────────────────────────────────
+
+function populateTrackSelect(classFilter) {
   const ids = Object.keys(tracksIndex).map(Number).sort((a, b) => a - b);
+  filteredTrackIds = classFilter
+    ? ids.filter(tid => tracksMeta[tid]?.class === classFilter)
+    : ids;
 
   dom.selTrack.innerHTML = '<option value="">Select track…</option>';
-  for (const tid of ids) {
+  for (const tid of filteredTrackIds) {
     const meta   = tracksMeta[tid];
     const option = document.createElement('option');
     option.value = tid;
@@ -202,9 +246,24 @@ async function loadRecording(recId) {
     dom.selTrack.appendChild(option);
   }
 
-  dom.selTrack.disabled = false;
-  currentRecId = recId;
-  setStatus(`Ready · ${ids.length} tracks`);
+  dom.selTrack.disabled = filteredTrackIds.length === 0;
+
+  const label = classFilter
+    ? `${filteredTrackIds.length} tracks · ${classFilter}`
+    : `Ready · ${filteredTrackIds.length} tracks`;
+  setStatus(label);
+}
+
+function navigateTrack(delta) {
+  if (!filteredTrackIds.length) return;
+  const currentTid = parseInt(dom.selTrack.value);
+  const idx = filteredTrackIds.indexOf(currentTid);
+  const newIdx = idx === -1
+    ? (delta > 0 ? 0 : filteredTrackIds.length - 1)
+    : (idx + delta + filteredTrackIds.length) % filteredTrackIds.length;
+  const newTid = filteredTrackIds[newIdx];
+  dom.selTrack.value = String(newTid);
+  renderTrack(newTid);
 }
 
 // ── Rendering ────────────────────────────────────────────────────────────────
