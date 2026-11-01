@@ -14,54 +14,93 @@
     <p>RWTH Aachen · Intersection Drone Dataset</p>
   </div>
 
-  <div class="field">
-    <label>Location</label>
-    <select id="sel-location">
-      <option value="">Select location…</option>
-      <option value="1">Location 1</option>
-      <option value="2">Location 2</option>
-      <option value="3">Location 3</option>
-      <option value="4">Location 4</option>
-    </select>
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="filters">Filters</button>
+    <button class="tab-btn" data-tab="info">Info</button>
+    <button class="tab-btn" data-tab="legend">Legend</button>
+  </nav>
+
+  <div id="tab-filters" class="tab-panel active">
+    <div class="field">
+      <label>Location</label>
+      <select id="sel-location">
+        <option value="">Select location…</option>
+        <option value="1">Location 1</option>
+        <option value="2">Location 2</option>
+        <option value="3">Location 3</option>
+        <option value="4">Location 4</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Recording</label>
+      <select id="sel-recording" disabled>
+        <option value="">Select location first…</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Class Filter</label>
+      <select id="sel-class" disabled>
+        <option value="">All classes</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Manoeuvre Filter <span class="hint">±30° / ±150°</span></label>
+      <select id="sel-maneuver" disabled>
+        <option value="">All manoeuvres</option>
+        <option value="straight">↑ Straight</option>
+        <option value="left">↰ Left turn</option>
+        <option value="right">↱ Right turn</option>
+        <option value="u-turn">↺ U-turn</option>
+        <option value="stationary">■ Stationary</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Cleaning Status</label>
+      <select id="sel-cleaning" disabled>
+        <option value="">All tracks</option>
+        <option value="kept">Kept</option>
+        <option value="removed">Removed</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Track <span class="hint">← → to navigate</span></label>
+      <select id="sel-track" disabled>
+        <option value="">Load a recording first…</option>
+      </select>
+    </div>
+
+    <div id="status">Select a location to begin</div>
   </div>
 
-  <div class="field">
-    <label>Recording</label>
-    <select id="sel-recording" disabled>
-      <option value="">Select location first…</option>
-    </select>
+  <div id="tab-info" class="tab-panel">
+    <div id="track-info">
+      <div class="row"><span class="key">Track ID</span>   <span class="val" id="i-id">–</span></div>
+      <div class="row"><span class="key">Class</span>      <span class="val" id="i-class">–</span></div>
+      <div class="row"><span class="key">Frames</span>     <span class="val" id="i-frames">–</span></div>
+      <div class="row"><span class="key">Duration</span>   <span class="val" id="i-dur">–</span></div>
+      <div class="row"><span class="key">Distance</span>   <span class="val" id="i-dist">–</span></div>
+      <div class="row"><span class="key">Size (l×w)</span> <span class="val" id="i-size">–</span></div>
+      <div class="row"><span class="key">Manoeuvre</span>  <span class="val" id="i-maneuver">–</span></div>
+      <div class="row"><span class="key">Δ Heading</span>  <span class="val" id="i-delta">–</span></div>
+      <div class="row"><span class="key">Status</span>     <span class="val" id="i-status">–</span></div>
+    </div>
+    <p id="info-empty">Select a track to see details</p>
   </div>
 
-  <div class="field">
-    <label>Class Filter</label>
-    <select id="sel-class" disabled>
-      <option value="">All classes</option>
-    </select>
-  </div>
-
-  <div class="field">
-    <label>Track <span class="hint">← → to navigate</span></label>
-    <select id="sel-track" disabled>
-      <option value="">Load a recording first…</option>
-    </select>
-  </div>
-
-  <div id="status">Select a location to begin</div>
-
-  <div id="track-info">
-    <div class="row"><span class="key">Track ID</span>   <span class="val" id="i-id">–</span></div>
-    <div class="row"><span class="key">Class</span>      <span class="val" id="i-class">–</span></div>
-    <div class="row"><span class="key">Frames</span>     <span class="val" id="i-frames">–</span></div>
-    <div class="row"><span class="key">Duration</span>   <span class="val" id="i-dur">–</span></div>
-    <div class="row"><span class="key">Size (l×w)</span> <span class="val" id="i-size">–</span></div>
-  </div>
-
-  <div class="legend">
-    <div class="legend-title">Legend</div>
-    <div class="legend-row"><div class="dot" style="background:#00ee77;"></div> Start position</div>
-    <div class="legend-row"><div class="dot" style="background:#ff4444;"></div> End position</div>
-    <div class="legend-row"><div class="line"></div> Path</div>
-    <div class="legend-row"><div class="grad-bar"></div> Bounding boxes (start → end)</div>
+  <div id="tab-legend" class="tab-panel">
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-row"><div class="dot" style="background:#00ee77;"></div> Start position</div>
+      <div class="legend-row"><div class="dot" style="background:#ff4444;"></div> End position</div>
+      <div class="legend-row"><div class="line"></div> Kept track</div>
+      <div class="legend-row"><div class="line" style="background:rgba(255,70,70,0.75);"></div> Removed track</div>
+<div class="legend-row"><div class="grad-bar"></div> Bounding boxes (start → end)</div>
+    </div>
   </div>
 </div>
 
@@ -79,6 +118,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

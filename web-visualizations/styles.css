@@ -102,6 +102,42 @@ select:disabled              { opacity: 0.35; cursor: default; }
   50%       { opacity: 0.45; }
 }
 
+/* ── Tabs ───────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid #252545;
+  margin: 0 -16px;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px 4px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: #505070;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover  { color: #9090c0; }
+.tab-btn.active { color: #c8c8f0; border-bottom-color: #8080c8; }
+
+.tab-panel {
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.tab-panel.active { display: flex; }
+
 /* ── Track info ─────────────────────────────── */
 #track-info {
   background: #1e1e3a;
@@ -116,6 +152,18 @@ select:disabled              { opacity: 0.35; cursor: default; }
 #track-info .row              { display: flex; justify-content: space-between; }
 #track-info .key              { color: #606080; }
 #track-info .val              { color: #c8c8f0; font-weight: 500; }
+
+.status-kept    { color: #44c47a !important; }
+.status-removed { color: #ff5555 !important; }
+
+#info-empty {
+  font-size: 12px;
+  color: #505070;
+  text-align: center;
+  padding: 24px 0;
+}
+
+#track-info.visible ~ #info-empty { display: none; }
 
 /* ── Legend ─────────────────────────────────── */
 .legend { display: flex; flex-direction: column; gap: 7px; }

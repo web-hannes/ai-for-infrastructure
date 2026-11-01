@@ -12,3 +12,7 @@
 
 # Dataset
 inD-dataset-v1.1/
+highD-dataset-v1.0/
+
+# Pipeline output
+tracks_clean.csv
