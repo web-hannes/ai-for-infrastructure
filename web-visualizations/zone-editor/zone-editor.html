@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zone Editor — inD Dataset</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    #validation {
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 5px;
+      background: #1e1e3a;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+    }
+    #validation.valid   { color: #44c47a; }
+    #validation.invalid { color: #ff5555; }
+    #validation.empty   { color: #505070; }
+
+    #pass-rate {
+      background: #1e1e3a;
+      border-radius: 5px;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 2;
+      display: none;
+    }
+    #pass-rate.visible { display: block; }
+    #pass-rate .row    { display: flex; justify-content: space-between; }
+    #pass-rate .key    { color: #606080; }
+    #pass-rate .val    { color: #c8c8f0; font-weight: 500; }
+    #pass-rate .pass   { color: #44c47a !important; }
+    #pass-rate .fail   { color: #ff5555 !important; }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid #303055;
+      border-radius: 5px;
+      background: #1e1e3a;
+      color: #d0d0e8;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s, opacity 0.15s;
+    }
+    button:hover:not(:disabled) { border-color: #6060a8; }
+    button:disabled { opacity: 0.35; cursor: default; }
+    button.primary {
+      background: #2a2a5a;
+      border-color: #5050a0;
+      color: #c8c8f0;
+    }
+    button.primary:hover:not(:disabled) { border-color: #8080c8; }
+
+    #export-output {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    #export-snippet {
+      width: 100%;
+      height: 120px;
+      background: #0d0d1a;
+      color: #9090c8;
+      border: 1px solid #252545;
+      border-radius: 5px;
+      padding: 8px;
+      font-size: 10px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      resize: none;
+      outline: none;
+      cursor: pointer;
+    }
+    #download-link {
+      font-size: 11px;
+      color: #6060a8;
+      text-align: center;
+      text-decoration: none;
+      padding: 4px 0;
+      display: none;
+    }
+    #download-link.visible {
+      display: block;
+      color: #8080c8;
+    }
+    #download-link:hover { color: #c8c8f0; }
+
+    .point-hint {
+      font-size: 11px;
+      color: #404060;
+      text-align: center;
+      padding: 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="brand">
+    <h1>Zone Editor</h1>
+    <p>inD Dataset · Intersection Zones</p>
+  </div>
+
+  <div class="field">
+    <label>Location</label>
+    <select id="sel-location">
+      <option value="">Select location…</option>
+      <option value="1">Location 1</option>
+      <option value="2">Location 2</option>
+      <option value="3">Location 3</option>
+      <option value="4">Location 4</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Recording <span class="hint">for pass rate</span></label>
+    <select id="sel-recording" disabled>
+      <option value="">Select location first…</option>
+    </select>
+  </div>
+
+  <div id="status">Select a location to begin</div>
+
+  <div id="validation" class="empty">Place 4 points to validate</div>
+
+  <div id="pass-rate">
+    <div class="row"><span class="key">Total vehicles</span><span class="val" id="pr-total">–</span></div>
+    <div class="row"><span class="key">Pass</span><span class="val pass" id="pr-pass">–</span></div>
+    <div class="row"><span class="key">Fail — starts inside</span><span class="val fail" id="pr-starts">–</span></div>
+    <div class="row"><span class="key">Fail — ends inside</span><span class="val fail" id="pr-ends">–</span></div>
+    <div class="row"><span class="key">Fail — never inside</span><span class="val fail" id="pr-never">–</span></div>
+  </div>
+
+  <div class="point-hint" id="point-hint">Click the map to place points</div>
+
+  <div class="btn-row">
+    <button class="primary" id="btn-export" disabled>Export</button>
+    <button id="btn-reset" disabled>Reset</button>
+  </div>
+
+  <div id="export-output">
+    <label>Python snippet</label>
+    <textarea id="export-snippet" readonly placeholder="Export to generate snippet…" onclick="this.select()"></textarea>
+    <a id="download-link" href="#" download="zones.json">Download zones.json</a>
+  </div>
+</div>
+
+<div id="main">
+  <div id="placeholder">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+      <polygon points="3,21 12,3 21,21"/>
+      <line x1="12" y1="9" x2="12" y2="14"/>
+      <circle cx="12" cy="17" r="0.8" fill="currentColor"/>
+    </svg>
+    Select a location to start drawing a zone
+  </div>
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="zone-editor.js?v=1"></script>
+</body>
+</html>
